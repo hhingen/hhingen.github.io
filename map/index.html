@@ -100,6 +100,10 @@
 
 <div align="center">
   <p></p>
+  <div class="form-check form-check-inline">
+    <input class="form-check-input" type="checkbox" value="" id="JPG" onchange="FiltroPais()">
+    <label class="form-check-label" for="JPG" style="color:white">JpgStore</label>
+  </div>
 <select id="SelectPais" class="filter-button filter-button2 active" onchange="FiltroPais()">
     <option class="filter-button filter-button2" value='All'>All Countries
     <option class="filter-button filter-button2" value='Afghanistan'>Afghanistan
@@ -338,7 +342,10 @@
 
 <div align="center">
 <div class="p-4">
-  <h5> <p id="AN" class="text-dark">CT0330</p></h5>
+  <h5><p id="AN" class="text-dark">CT0330</p></h5>
+  <a id="POOLPM" class="small text-muted mb-0" target=”_blank” href="https://pool.pm/e09e4f4217669b7f735b7a3724e835d8d6344db128eb03d6ea72885e.CT0330" ><b>pool.pm</b></a>
+  <a id="JPGSTORE" class="small text-muted mb-0" target=”_blank” href="https://www.jpg.store/collection/cardanotrees?searchText=9288" ><b>jpg.store</b></a>
+  </p>
   <p id="PAIS" class="small text-muted mb-0">Country: Libya</p>
   <p id="SPEC" class="small text-muted mb-0">Species: Alpha</p>
   <p id="ABUN" class="small text-muted mb-0">Abundance: Rare</p>    
@@ -346,7 +353,7 @@
   <p id="FLOW" class="small text-muted mb-0">Flowers: March to June</p>
   <p id="FRUI" class="small text-muted mb-0">Fruits: June to September</p>
   <p id="LALO" class="small text-muted mb-0">Lat/Long: 27.9 / 10.3</p>
-  <a id="POOLPM" class="small text-muted mb-0" target=”_blank” href="https://pool.pm/e09e4f4217669b7f735b7a3724e835d8d6344db128eb03d6ea72885e.CT0330" ><b>pool.pm</b></p>  
+
 </div>
 </div>
 
@@ -357,8 +364,26 @@
 
 
 <script>
-    var count = 10030;
-    var features = new Array(count);
+
+JPGStore=[];
+JPGStoreA=[];
+function GetJPG(ii){
+  fetch('https://server.jpgstoreapis.com/policy/e09e4f4217669b7f735b7a3724e835d8d6344db128eb03d6ea72885e/listings?page='+ii)
+    .then(response => response.json())
+    .then(data => JPGStore.push(data));
+}
+for (var ii = 0; ii < 100; ++ii) {
+  GetJPG(ii);
+}
+function GetJPGAlonzo(ii){
+  fetch('https://server.jpgstoreapis.com/policy/03928bd24b6afb832bf94503c73f8e46380e7c32b6ec3907ca100adb/listings?page='+ii)
+    .then(response => response.json())
+    .then(data => JPGStoreA.push(data));
+}
+GetJPGAlonzo(0);
+
+var count = 10030;
+var features = new Array(count);
 
 var markers = [
 ['CT0000','EpicRare','Day/Night/Rain/Snow','N/A','N/A',59.3,-130.8,'One','Delta','Canada'],
@@ -20529,6 +20554,13 @@ var IPFS = [
       }else{
         poolpm.href="https://pool.pm/e09e4f4217669b7f735b7a3724e835d8d6344db128eb03d6ea72885e."+markers[closestFeature.get('i')][0];
       }
+      var jpgstore=document.getElementById('JPGSTORE');
+      jpgstore.href="https://www.jpg.store/collection/cardanotrees?searchText="+markers[closestFeature.get('i')][0].slice(2);
+      if(closestFeature.get('i')>9999){
+        jpgstore.href="https://www.jpg.store/collection/cardanotreesalonzo?searchText="+markers[closestFeature.get('i')][0].slice(8);
+      }else{
+        jpgstore.href="https://www.jpg.store/collection/cardanotrees?searchText="+markers[closestFeature.get('i')][0].slice(2);
+      }      
       var pais = document.getElementById('PAIS');
       pais.innerHTML="Country: "+markers[closestFeature.get('i')][9];
       var spec = document.getElementById('SPEC');
@@ -20594,16 +20626,42 @@ var IPFS = [
     }
 
   function FiltroPais() {
+    //console.log(JPGStore.length)
+    //console.log(JPGStore[0].length)
+    //console.log(JPGStore[8].length)
+    //console.log('CT'+JPGStore[8][0].display_name.split(' ')[1])
+    auxn='';
+    for(var jj = 0; jj < JPGStore.length; ++jj) {
+      for(var kk = 0; kk < JPGStore[jj].length; ++kk) {
+        auxn=auxn+'CT'+JPGStore[jj][kk].display_name.split(' ')[1];
+      }
+    }
+    for(var jj = 0; jj < JPGStoreA.length; ++jj) {
+      for(var kk = 0; kk < JPGStoreA[jj].length; ++kk) {
+        auxn=auxn+'AlonzoCT'+JPGStoreA[jj][kk].display_name.split(' ')[2];
+      }
+    }
+    console.log(auxn);
+    auxtext=["AlonzoOne","AlphaOne","BetaOne","BetaTwo","GammaOne","GammaTwo","DeltaOne","DeltaTwo","DeltaThree","EpsilonOne","EpsilonTwo","EpsilonThree"];
+    idaux=["AlonzoCh","AlphaCh","BetaCh1","BetaCh2","GammaCh1","GammaCh2","DeltaCh1","DeltaCh2","DeltaCh3","EpsilonCh1","EpsilonCh2","EpsilonCh3"];
     var x = document.getElementById("SelectPais").value;
     for (var i = 0; i < count; ++i) {
       if(markers[i][9]!==x && x!=="All"){
           features[i].setStyle(styles['2']
         )}else{
-          auxtext=["AlonzoOne","AlphaOne","BetaOne","BetaTwo","GammaOne","GammaTwo","DeltaOne","DeltaTwo","DeltaThree","EpsilonOne","EpsilonTwo","EpsilonThree"];
-          idaux=["AlonzoCh","AlphaCh","BetaCh1","BetaCh2","GammaCh1","GammaCh2","DeltaCh1","DeltaCh2","DeltaCh3","EpsilonCh1","EpsilonCh2","EpsilonCh3"];
           for (var j = 0; j < auxtext.length; ++j) {
             if (document.getElementById(idaux[j]).checked){
-              if(markers[i][8]+markers[i][7]==auxtext[j]){features[i].setStyle(styles['5'])};
+              if(markers[i][8]+markers[i][7]==auxtext[j]){
+                if (document.getElementById('JPG').checked){
+                  if(auxn.includes(markers[i][0])){
+                    features[i].setStyle(styles['5'])
+                  }else{
+                    features[i].setStyle(styles['2'])
+                  }
+                }else{
+                  features[i].setStyle(styles['5'])
+                }
+              };
             }else{
               if(markers[i][8]+markers[i][7]==auxtext[j]){features[i].setStyle(styles['2'])};
             }
