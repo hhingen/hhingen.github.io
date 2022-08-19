@@ -2,6 +2,14 @@ body {
   background: #f4f4f4;
 }
 
+.img-fluid2:hover {
+  cursor: pointer;
+}
+
+.img-fluid3:hover {
+  cursor: pointer;
+}
+
 .banner {
   background: rgb(0, 80, 0);
 }
